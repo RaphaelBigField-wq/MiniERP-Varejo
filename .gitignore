@@ -1,0 +1,30 @@
+﻿# Compilacao .NET
+**/bin/
+**/obj/
+
+# IDEs e configuracoes locais
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Configuracoes locais e segredos
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+.env
+.env.*
+!.env.example
+secrets.json
+**/secrets.json
+
+# Certificados e chaves privadas
+*.pfx
+*.p12
+*.key
+*.pem
+
+# Publicacao e diagnosticos
+*.publishsettings
+*.pubxml.user
+*.log
