@@ -1,4 +1,5 @@
 
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniERP.Api.Data;
@@ -54,5 +55,44 @@ public class CategoriasController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Created("api/Categorias", categoria);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Atualizar(
+        int id,
+        [FromBody] Categoria categoria)
+    {
+        var categoriaExistente = await _context.Categorias
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (categoriaExistente == null)
+        {
+            return NotFound("Categoria não encontrada.");
+        }
+
+        var nome = categoria.Nome?.Trim();
+
+        if (string.IsNullOrWhiteSpace(nome))
+        {
+            return BadRequest("O nome da categoria é obrigatório.");
+        }
+
+        var nomeNormalizado = nome.ToLower();
+
+        var existe = await _context.Categorias.AnyAsync(c =>
+            c.Id != id &&
+            c.Nome.Trim().ToLower() == nomeNormalizado);
+
+        if (existe)
+        {
+            return Conflict("Já existe uma categoria com esse nome.");
+        }
+
+        categoriaExistente.Nome = nome;
+        categoriaExistente.Ativa = categoria.Ativa;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(categoriaExistente);
     }
 }
