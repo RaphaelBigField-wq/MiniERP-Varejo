@@ -1,5 +1,4 @@
 
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniERP.Api.Data;
@@ -94,5 +93,23 @@ public class CategoriasController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(categoriaExistente);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Inativar(int id)
+    {
+        var categoria = await _context.Categorias
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (categoria == null)
+        {
+            return NotFound("Categoria não encontrada.");
+        }
+
+        categoria.Ativa = false;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(categoria);
     }
 }
