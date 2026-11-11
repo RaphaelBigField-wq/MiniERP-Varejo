@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using MiniERP.Api.Domain.Entities;
 
@@ -11,4 +12,6 @@ public class MiniERPContext : DbContext
     }
 
     public DbSet<Categoria> Categorias => Set<Categoria>();
+
+    public DbSet<Produto> Produtos => Set<Produto>();
 }
