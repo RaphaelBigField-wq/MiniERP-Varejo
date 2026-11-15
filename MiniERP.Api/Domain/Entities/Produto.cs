@@ -14,6 +14,9 @@ public class Produto
 
     [Precision(18, 2)]
     public decimal PrecoVenda { get; set; }
+   
+    [Precision(18,3)]
+    public decimal EstoqueAtual {get; set; } = 0;
 
     public bool Ativo { get; set; } = true;
 
