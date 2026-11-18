@@ -42,6 +42,41 @@ namespace MiniERP.Api.Migrations
                     b.ToTable("Categorias");
                 });
 
+            modelBuilder.Entity("MiniERP.Api.Domain.Entities.ItemVenda", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("PrecoUnitario")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("VendaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("VendaId");
+
+                    b.ToTable("ItensVenda");
+                });
+
             modelBuilder.Entity("MiniERP.Api.Domain.Entities.MotivoAjusteEstoque", b =>
                 {
                     b.Property<int>("Id")
@@ -165,6 +200,25 @@ namespace MiniERP.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("MiniERP.Api.Domain.Entities.ItemVenda", b =>
+                {
+                    b.HasOne("MiniERP.Api.Domain.Entities.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiniERP.Api.Domain.Entities.Venda", "Venda")
+                        .WithMany()
+                        .HasForeignKey("VendaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("MiniERP.Api.Domain.Entities.MovimentacaoEstoque", b =>
