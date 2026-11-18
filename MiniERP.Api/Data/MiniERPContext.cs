@@ -18,4 +18,6 @@ public class MiniERPContext : DbContext
     public DbSet<MovimentacaoEstoque> MovimentacoesEstoque => Set<MovimentacaoEstoque>();
 
     public DbSet<MotivoAjusteEstoque> MotivosAjusteEstoque => Set<MotivoAjusteEstoque>();
+
+    public DbSet<Venda> Vendas => Set<Venda>();
 }

@@ -143,6 +143,30 @@ namespace MiniERP.Api.Migrations
                     b.ToTable("Produtos");
                 });
 
+            modelBuilder.Entity("MiniERP.Api.Domain.Entities.Venda", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataHora")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vendas");
+                });
+
             modelBuilder.Entity("MiniERP.Api.Domain.Entities.MovimentacaoEstoque", b =>
                 {
                     b.HasOne("MiniERP.Api.Domain.Entities.Produto", "Produto")
