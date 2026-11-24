@@ -22,4 +22,7 @@ public class MiniERPContext : DbContext
     public DbSet<Venda> Vendas => Set<Venda>();
 
     public DbSet<ItemVenda> ItensVenda => Set<ItemVenda>();
+    
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
 }
+
