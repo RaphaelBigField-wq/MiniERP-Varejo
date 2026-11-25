@@ -22,6 +22,8 @@ public class MovimentacoesEstoqueController : ControllerBase
     {
         var movimentacoes = await _context.MovimentacoesEstoque
             .Include(m => m.Produto)
+            .Include(m => m.Venda)
+            .Include(m => m.ItemVenda)
             .ToListAsync();
 
         return Ok(movimentacoes);
@@ -32,6 +34,8 @@ public class MovimentacoesEstoqueController : ControllerBase
     {
         var movimentacao = await _context.MovimentacoesEstoque
             .Include(m => m.Produto)
+            .Include(m => m.Venda)
+            .Include(m => m.ItemVenda)
             .FirstOrDefaultAsync(m => m.Id == id);
 
         if (movimentacao == null)
@@ -42,59 +46,59 @@ public class MovimentacoesEstoqueController : ControllerBase
 
     
 
-[HttpPost]
-public async Task<IActionResult> Registrar(MovimentacaoEstoque movimentacao)
-{
-    if (movimentacao.Quantidade <= 0)
-        return BadRequest("A quantidade deve ser maior que zero.");
-
-    var produto = await _context.Produtos
-        .FirstOrDefaultAsync(p => p.Id == movimentacao.ProdutoId);
-
-    if (produto == null)
-        return NotFound("Produto não encontrado.");
-
-    if (movimentacao.Tipo is not ("Entrada" or "Saída" or "Ajuste"))
-        return BadRequest("Tipo de movimentação inválido.");
-
-    decimal variacaoEstoque;
-
-    if (movimentacao.Tipo == "Entrada")
+    [HttpPost]
+    public async Task<IActionResult> Registrar(MovimentacaoEstoque movimentacao)
     {
-        if (movimentacao.DirecaoAjuste != null ||
-            movimentacao.MotivoAjusteEstoqueId.HasValue)
-            return BadRequest("Entrada não deve possuir direção ou motivo de ajuste.");
+        if (movimentacao.Quantidade <= 0)
+            return BadRequest("A quantidade deve ser maior que zero.");
 
-        variacaoEstoque = movimentacao.Quantidade;
-    }
-    else if (movimentacao.Tipo == "Saída")
-    {
-        if (movimentacao.DirecaoAjuste != null ||
-            movimentacao.MotivoAjusteEstoqueId.HasValue)
-            return BadRequest("Saída não deve possuir direção ou motivo de ajuste.");
+        var produto = await _context.Produtos
+            .FirstOrDefaultAsync(p => p.Id == movimentacao.ProdutoId);
 
-        variacaoEstoque = -movimentacao.Quantidade;
-    }
-    else
-    {
-        if (movimentacao.DirecaoAjuste == "Aumentar")
+        if (produto == null)
+            return NotFound("Produto não encontrado.");
+
+        if (movimentacao.Tipo is not ("Entrada" or "Saída" or "Ajuste"))
+            return BadRequest("Tipo de movimentação inválido.");
+
+        decimal variacaoEstoque;
+
+        if (movimentacao.Tipo == "Entrada")
+        {
+            if (movimentacao.DirecaoAjuste != null ||
+                movimentacao.MotivoAjusteEstoqueId.HasValue)
+                return BadRequest("Entrada não deve possuir direção ou motivo de ajuste.");
+
             variacaoEstoque = movimentacao.Quantidade;
-        else if (movimentacao.DirecaoAjuste == "Diminuir")
+        }
+        else if (movimentacao.Tipo == "Saída")
+        {
+            if (movimentacao.DirecaoAjuste != null ||
+                movimentacao.MotivoAjusteEstoqueId.HasValue)
+                return BadRequest("Saída não deve possuir direção ou motivo de ajuste.");
+
             variacaoEstoque = -movimentacao.Quantidade;
+        }
         else
-            return BadRequest("Direção do ajuste inválida.");
+        {
+            if (movimentacao.DirecaoAjuste == "Aumentar")
+                variacaoEstoque = movimentacao.Quantidade;
+            else if (movimentacao.DirecaoAjuste == "Diminuir")
+                variacaoEstoque = -movimentacao.Quantidade;
+            else
+                return BadRequest("Direção do ajuste inválida.");
 
-        if (!movimentacao.MotivoAjusteEstoqueId.HasValue)
-            return BadRequest("O motivo do ajuste é obrigatório.");
+            if (!movimentacao.MotivoAjusteEstoqueId.HasValue)
+                return BadRequest("O motivo do ajuste é obrigatório.");
 
-        var motivo = await _context.MotivosAjusteEstoque
-            .FirstOrDefaultAsync(m =>
-                m.Id == movimentacao.MotivoAjusteEstoqueId &&
-                m.Ativo);
+            var motivo = await _context.MotivosAjusteEstoque
+                .FirstOrDefaultAsync(m =>
+                    m.Id == movimentacao.MotivoAjusteEstoqueId &&
+                    m.Ativo);
 
-        if (motivo == null)
-            return BadRequest("Motivo de ajuste não encontrado ou inativo.");
-    }
+            if (motivo == null)
+                return BadRequest("Motivo de ajuste não encontrado ou inativo.");
+        }
 
     if (produto.EstoqueAtual + variacaoEstoque < 0)
         return BadRequest("Estoque insuficiente para realizar a movimentação.");

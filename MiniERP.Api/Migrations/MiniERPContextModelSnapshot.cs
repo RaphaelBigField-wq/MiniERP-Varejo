@@ -111,6 +111,9 @@ namespace MiniERP.Api.Migrations
                     b.Property<string>("DirecaoAjuste")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ItemVendaId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("MotivoAjusteEstoqueId")
                         .HasColumnType("int");
 
@@ -128,9 +131,16 @@ namespace MiniERP.Api.Migrations
                     b.Property<int>("UsuarioResponsavelId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("VendaId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("ItemVendaId");
+
                     b.HasIndex("ProdutoId");
+
+                    b.HasIndex("VendaId");
 
                     b.ToTable("MovimentacoesEstoque");
                 });
@@ -247,13 +257,25 @@ namespace MiniERP.Api.Migrations
 
             modelBuilder.Entity("MiniERP.Api.Domain.Entities.MovimentacaoEstoque", b =>
                 {
+                    b.HasOne("MiniERP.Api.Domain.Entities.ItemVenda", "ItemVenda")
+                        .WithMany()
+                        .HasForeignKey("ItemVendaId");
+
                     b.HasOne("MiniERP.Api.Domain.Entities.Produto", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MiniERP.Api.Domain.Entities.Venda", "Venda")
+                        .WithMany()
+                        .HasForeignKey("VendaId");
+
+                    b.Navigation("ItemVenda");
+
                     b.Navigation("Produto");
+
+                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("MiniERP.Api.Domain.Entities.Produto", b =>

@@ -1,4 +1,5 @@
 
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniERP.Api.Data;
@@ -64,6 +65,12 @@ public class ItensVendaController : ControllerBase
         if (item.Quantidade <= 0)
             return BadRequest("A quantidade deve ser maior que zero.");
 
+        var usuario = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Id == 1 && u.Ativo);
+
+        if (usuario == null)
+            return BadRequest("Usuário responsável não encontrado ou inativo.");
+
         if (produto.EstoqueAtual < item.Quantidade)
             return BadRequest("Estoque insuficiente.");
 
@@ -75,6 +82,19 @@ public class ItensVendaController : ControllerBase
         venda.ValorTotal += item.Subtotal;
 
         _context.ItensVenda.Add(item);
+
+        var movimentacao = new MovimentacaoEstoque
+        {
+            ProdutoId = item.ProdutoId,
+            Tipo = "Saída",
+            Quantidade = item.Quantidade,
+            DataHora = DateTime.Now,
+            UsuarioResponsavelId = usuario.Id,
+            VendaId = venda.Id,
+            ItemVenda = item
+        };
+
+        _context.MovimentacoesEstoque.Add(movimentacao);
 
         await _context.SaveChangesAsync();
 

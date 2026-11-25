@@ -22,4 +22,12 @@ public class MovimentacaoEstoque
     public int UsuarioResponsavelId { get; set; }
 
     public int? MotivoAjusteEstoqueId { get; set; }
+
+    public int? VendaId { get; set; }
+
+    public Venda? Venda { get; set; }
+
+    public int? ItemVendaId { get; set; }
+
+    public ItemVenda? ItemVenda { get; set; }
 }
